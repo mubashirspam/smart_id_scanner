@@ -240,8 +240,7 @@ class _ScannerWidgetState extends State<ScannerWidget>
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _handleRetake,
-                    style:
-                        _controller.retakeButtonStyle ??
+                    style: _controller.retakeButtonStyle ??
                         ElevatedButton.styleFrom(
                           backgroundColor: Colors.red.shade600,
                           foregroundColor: Colors.white,
@@ -251,11 +250,10 @@ class _ScannerWidgetState extends State<ScannerWidget>
                           ),
                           elevation: 3,
                         ),
-                    child:
-                        _controller.retakeButtonChild ??
-                        Row(
+                    child: _controller.retakeButtonChild ??
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(Icons.refresh, size: 22),
                             SizedBox(width: 8),
                             Text(
@@ -274,8 +272,7 @@ class _ScannerWidgetState extends State<ScannerWidget>
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _handleConfirm,
-                    style:
-                        _controller.confirmButtonStyle ??
+                    style: _controller.confirmButtonStyle ??
                         ElevatedButton.styleFrom(
                           backgroundColor: Colors.green.shade600,
                           foregroundColor: Colors.white,
@@ -285,11 +282,10 @@ class _ScannerWidgetState extends State<ScannerWidget>
                           ),
                           elevation: 3,
                         ),
-                    child:
-                        _controller.confirmButtonChild ??
-                        Row(
+                    child: _controller.confirmButtonChild ??
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Icon(Icons.check, size: 22),
                             SizedBox(width: 8),
                             Text(
@@ -360,11 +356,10 @@ class _ScannerWidgetState extends State<ScannerWidget>
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   border: Border.all(
-                    color:
-                        _controller.cameraService.state ==
-                                CameraState.processing
-                            ? Colors.blue
-                            : Colors.white,
+                    color: _controller.cameraService.state ==
+                            CameraState.processing
+                        ? Colors.blue
+                        : Colors.white,
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(12),
@@ -423,10 +418,9 @@ class _ScannerWidgetState extends State<ScannerWidget>
   Widget _buildCornerIndicator({required Alignment alignment}) {
     const size = 30.0;
     const thickness = 4.0;
-    final color =
-        _controller.cameraService.state == CameraState.processing
-            ? Colors.blue
-            : Colors.white;
+    final color = _controller.cameraService.state == CameraState.processing
+        ? Colors.blue
+        : Colors.white;
 
     return SizedBox(
       width: size,
@@ -512,9 +506,9 @@ class _ScannerWidgetState extends State<ScannerWidget>
         Text(
           'Detecting document...',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
         ),
         const SizedBox(height: 8),
         ClipRRect(
@@ -543,14 +537,12 @@ class _ScannerWidgetState extends State<ScannerWidget>
     if (!_controller.autoCapture) {
       return Center(
         child: FloatingActionButton(
-          onPressed:
-              cameraService.state == CameraState.ready
-                  ? () => _controller.captureManually()
-                  : null,
-          backgroundColor:
-              cameraService.state == CameraState.ready
-                  ? Theme.of(context).primaryColor
-                  : Colors.grey,
+          onPressed: cameraService.state == CameraState.ready
+              ? () => _controller.captureManually()
+              : null,
+          backgroundColor: cameraService.state == CameraState.ready
+              ? Theme.of(context).primaryColor
+              : Colors.grey,
           child: const Icon(Icons.camera_alt, size: 28),
         ),
       );
@@ -603,10 +595,9 @@ class _ScannerWidgetState extends State<ScannerWidget>
     switch (cameraService.state) {
       case CameraState.ready:
         if (_controller.autoCapture) {
-          statusText =
-              cameraService.consecutiveDetections > 0
-                  ? 'Hold steady...'
-                  : 'Position document in frame';
+          statusText = cameraService.consecutiveDetections > 0
+              ? 'Hold steady...'
+              : 'Position document in frame';
         } else {
           statusText = 'Tap to capture';
         }
@@ -626,9 +617,9 @@ class _ScannerWidgetState extends State<ScannerWidget>
     return Text(
       statusText,
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-        color: Colors.white,
-        fontWeight: FontWeight.w500,
-      ),
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
       textAlign: TextAlign.center,
     );
   }

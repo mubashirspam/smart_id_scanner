@@ -1,39 +1,40 @@
 name: smart_id_scanner
-description: A smart ID/document scanner package for Flutter with automatic detection and data extraction capabilities.
+description: A Flutter plugin for scanning ID documents using ML Kit
 version: 0.0.1
-homepage: https://your-repo-url.com
+homepage: https://github.com/mubashirspam/smart_id_scanner
 
 environment:
-  sdk: ">=2.19.0 <4.0.0"
+  sdk: '>=2.19.0 <4.0.0'
   flutter: ">=3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   camera: ^0.11.1
-  image_picker: ^1.0.4
-  path_provider: ^2.1.1
-  path: ^1.8.3
-  image: ^4.0.17
-  permission_handler: ^12.0.0+1
   google_mlkit_text_recognition: ^0.15.0
-  intl: ^0.20.2
+  google_mlkit_commons: ^0.11.0
+  image: ^4.0.17
+  intl: ^0.19.0
+  permission_handler: ^11.0.2
+  path_provider: ^2.1.5
+  image_picker: ^1.1.2
+  # camerawesome: ^2.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^2.0.0
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-# The following section is specific to Flutter packages.
-flutter:
-  # This section identifies this Flutter project as a plugin project.
-  plugin:
-    platforms:
-      android:
-        package: com.example.smart_id_scanner
-        pluginClass: SmartIdScannerPlugin
-      ios:
-        pluginClass: SmartIdScannerPlugin
-  
+platforms:
+  android:
+  ios:
+
+# This declares the plugin structure
+# flutter:
+#   plugin:
+#     platforms:
+#       android:
+#         package: com.mubashir.smart_id_scanner
+#         pluginClass: SmartIdScannerPlugin
+#       ios:
+#         pluginClass: SmartIdScannerPlugin

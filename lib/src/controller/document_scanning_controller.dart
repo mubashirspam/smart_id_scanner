@@ -1,16 +1,18 @@
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../services/image_cropping_utility.dart';
 import '../services/service.dart';
 
-typedef OnImageCapturedCallback =
-    void Function(Map<String, dynamic> extractedData, File imageFile);
-typedef OnConfirmCallback =
-    void Function(Map<String, dynamic> extractedData, File imageFile);
+typedef OnImageCapturedCallback = void Function(
+    Map<String, dynamic> extractedData, File imageFile);
+typedef OnConfirmCallback = void Function(
+    Map<String, dynamic> extractedData, File imageFile);
 
 class DocumentScanningController {
-    final List<VoidCallback> _stateListeners = [];
+  bool _isDisposed = false;
+  bool _wasImageConfirmed = false;
+  bool get isDisposed => _isDisposed;
+  final List<VoidCallback> _stateListeners = [];
   final List<String> validationKeywords;
   final List<ExtractedDataModel> fieldsToExtract;
   final double cameraAspectRatio;
@@ -73,9 +75,6 @@ class DocumentScanningController {
   bool get hasCapture =>
       _currentImageFile != null && _currentExtractedData != null;
 
-
-      
-
   Future<void> initialize() async {
     await _cameraControllerService.initializeCamera();
     if (autoCapture) {
@@ -96,7 +95,7 @@ class DocumentScanningController {
   }
 
   void retake() {
-    // Clean up current image
+    // Clean up current image only when explicitly retaking
     if (_currentImageFile != null) {
       try {
         _currentImageFile!.delete();
@@ -105,14 +104,13 @@ class DocumentScanningController {
 
     _currentImageFile = null;
     _currentExtractedData = null;
+    _wasImageConfirmed = false; // Reset confirmation flag
 
     // Reset the camera state to ready to allow new captures
     _cameraControllerService.resetDetection();
 
     if (autoCapture) {
-      // Start a new capture immediately
       _cameraControllerService.captureImage().then((_) {
-        // After capture, restart auto-capture if needed
         if (autoCapture) {
           _cameraControllerService.resetDetection();
           startAutoCapture();
@@ -123,23 +121,25 @@ class DocumentScanningController {
 
   void confirm() {
     if (_currentImageFile != null && _currentExtractedData != null) {
+      _wasImageConfirmed = true; // Mark as confirmed
       onConfirm?.call(_currentExtractedData!, _currentImageFile!);
     }
   }
- void addStateListener(VoidCallback listener) {
+
+  void addStateListener(VoidCallback listener) {
     _stateListeners.add(listener);
   }
-  
+
   void removeStateListener(VoidCallback listener) {
     _stateListeners.remove(listener);
   }
-  
+
   void _notifyStateListeners() {
     for (final listener in _stateListeners) {
       listener();
     }
   }
-  
+
   // Update _handleImageCaptured to notify listeners
   void _handleImageCaptured(File imageFile) async {
     try {
@@ -147,18 +147,18 @@ class DocumentScanningController {
         imageFile,
         cameraAspectRatio,
       );
-      
+
       final result = await _documentScannerService.scanDocument(
         imageFile: croppedImage,
         validationKeywords: validationKeywords,
         fieldsToExtract: fieldsToExtract,
       );
-      
+
       if (result != null && result.isValid) {
         _currentImageFile = croppedImage;
         _currentExtractedData = result.toMap();
         onImageCaptured?.call(result.toMap(), croppedImage);
-        
+
         // Notify listeners that state has changed
         _notifyStateListeners();
       } else {
@@ -172,20 +172,30 @@ class DocumentScanningController {
     }
   }
 
-
   void _handleError(String message) {
     onError?.call(message);
   }
 
   void dispose() {
-    // Clean up any remaining image files
-    if (_currentImageFile != null) {
+    if (_isDisposed) return;
+    _isDisposed = true;
+
+    if (_currentImageFile != null && !_wasImageConfirmed) {
       try {
+        print('Cleaning up unconfirmed image: ${_currentImageFile!.path}');
         _currentImageFile!.delete();
-      } catch (_) {}
+      } catch (e) {
+        print('Error deleting unconfirmed image: $e');
+      }
+    } else if (_currentImageFile != null && _wasImageConfirmed) {
+      print('Keeping confirmed image: ${_currentImageFile!.path}');
     }
 
-    _cameraControllerService.dispose();
-    _documentScannerService.dispose();
+    try {
+      _cameraControllerService.dispose();
+      _documentScannerService.dispose();
+    } catch (e) {
+      debugPrint('Error disposing services: $e');
+    }
   }
 }
